@@ -11,7 +11,23 @@ let
     else packages;
 
   haskellPackages = with pkgs.haskell.lib; pkgs.haskellPackages.override {
-    overrides = self: super: {
+    overrides = self: super:
+      let
+        fixGHC = pkg:
+          if static == true
+          then
+            pkg.override {
+              enableRelocatedStaticLibs = true;
+              enableShared = false;
+              enableDwarf = false;
+            }
+          else
+            pkg;
+      in {
+        ghc = fixGHC super.ghc;
+        buildHaskellPackages = super.buildHaskellPackages.override (oldBuildHaskellPackages: {
+          ghc = fixGHC oldBuildHaskellPackages.ghc;
+        });
   };};
 
   drv1 = haskellPackages.callCabal2nix "test" ./. { };
