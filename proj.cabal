@@ -1,0 +1,37 @@
+cabal-version:      3.0
+name:               proj
+version:            0.1.0
+synopsis:           Some synopsis
+-- description:
+-- homepage:
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             Author Name
+maintainer:         maintainer@email.com
+-- copyright:
+-- category:           System
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+-- extra-source-files:
+
+common base
+    ghc-options:
+        -Wall
+        -Wincomplete-uni-patterns
+        -Wincomplete-record-updates
+        -Wcompat
+        -Widentities
+        -Wredundant-constraints
+    default-language:
+        GHC2021
+    build-depends:
+        base < 5
+
+executable proj
+    import: base
+    ghc-options:
+        -O2 -rtsopts -funbox-strict-fields -with-rtsopts=-T -threaded
+    hs-source-dirs: app
+    main-is: Main.hs
+    build-depends:
+
