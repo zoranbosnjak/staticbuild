@@ -1,7 +1,6 @@
 { sources ? import ./nix/sources.nix
 , packages ? import sources.nixpkgs {}
 , inShell ? null
-, withHoogle ? false
 , strip ? true
 , static ? false    # build static binary
 }:
@@ -38,8 +37,6 @@ let
   };};
 
   buildExports = ''
-    export LC_ALL=C.UTF-8
-    export GHC_BASE=$(which ghc | cut -d '/' -f-4)
   '';
 
   drv1 = haskellPackages.callCabal2nix "proj" ./. { };
@@ -80,8 +77,6 @@ let
 
     buildInputs = with haskellPackages; deps ++ [
     ];
-
-    withHoogle = withHoogle;
 
     shellHook = buildExports;
   };
