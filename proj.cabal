@@ -25,7 +25,55 @@ common base
     default-language:
         GHC2021
     build-depends:
-        base < 5
+      base < 5
+      , with-utf8
+      , unliftio
+      , microlens-platform
+      , exceptions
+      , optparse-applicative
+      , template-haskell
+      , temporary
+      , process
+      , directory
+      , filepath
+      , unix
+      , bytestring
+      , base16-bytestring
+      , base64-bytestring
+      , text
+      , time
+      , containers
+      , unordered-containers
+      , network
+      , network-multicast
+      , stm
+      , clock
+      , transformers
+      , mtl
+      , hslogger
+      , hsyslog
+      , deepseq
+      , aeson
+      , aeson-pretty
+      , uuid
+      , wai
+      , warp
+      , megaparsec
+      , pipes
+      , pipes-concurrency
+      , pipes-safe
+      , http-types
+      , http-client
+      , http-client-tls
+      , vector
+      -- , ekg
+      , random
+      , QuickCheck
+      -- , formatting
+      , scientific
+      , parser-combinators
+      , cryptonite
+      , pretty-show
 
 executable proj
     import: base
