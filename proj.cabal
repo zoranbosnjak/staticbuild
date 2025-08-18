@@ -26,6 +26,7 @@ common base
         GHC2021
     build-depends:
         base < 5
+        , formatting
 
 executable proj
     import: base
