@@ -26,6 +26,9 @@ common base
         GHC2021
     build-depends:
         base < 5
+        , pandoc
+        , pandoc-types
+        , unicode-collation
 
 executable proj
     import: base
