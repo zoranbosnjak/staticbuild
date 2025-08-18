@@ -1,15 +1,11 @@
 { sources ? import ./nix/sources.nix
-, packages ? import sources.nixpkgs {}
+, pkgs ? import sources.nixpkgs {}
 , inShell ? null
 , strip ? true
 , static ? false    # build static binary
 }:
 
 let
-  pkgs = if static == true
-    then packages.pkgsMusl.pkgsMusl
-    else packages;
-
   deps = with pkgs; [
   ];
 
@@ -54,15 +50,27 @@ let
   drv = if static == true
     then drv2.overrideDerivation (oldAttrs: {
       configureFlags = [
-        "--ghc-option=-optl=-static"
-        "--disable-shared"
-        "--extra-lib-dirs=${pkgs.gmp6.override { withStatic = true; }}/lib"
-        "--extra-lib-dirs=${pkgs.zlib.static}/lib"
-        "--extra-lib-dirs=${pkgs.libffi.overrideAttrs (old: { dontDisableStatic = true; })}/lib"
-        # double-conversion temporary patch
-        # This is required on nix-packages 24.05 until this patch is merged
-        # https://github.com/NixOS/nixpkgs/pull/322738
-        "--extra-lib-dirs=${pkgs.double-conversion.overrideAttrs(_: { cmakeFlags = [ ]; })}/lib"
+          "--ghc-option=-Werror"
+          "--ghc-option=-split-sections"
+          "--ghc-option=-optl=-static"
+          "--extra-lib-dirs=${pkgs.ncurses.override { enableStatic = true; }}/lib"
+          # Static linking crud
+          "--extra-lib-dirs=${pkgs.glibc.static}/lib"
+          "--extra-lib-dirs=${pkgs.gmp6.override { withStatic = true; }}/lib"
+          "--extra-lib-dirs=${pkgs.libffi.overrideAttrs (old: { dontDisableStatic = true; })}/lib"
+          # The ones below are due to GHC's runtime system
+          # depending on libdw (DWARF info), which depends on
+          # a bunch of compression algorithms.
+          "--ghc-option=-optl=-lbz2"
+          "--ghc-option=-optl=-lz"
+          "--ghc-option=-optl=-lelf"
+          "--ghc-option=-optl=-llzma"
+          "--ghc-option=-optl=-lzstd"
+          "--extra-lib-dirs=${pkgs.zlib.static}/lib"
+          "--extra-lib-dirs=${(pkgs.xz.override { enableStatic = true; }).out}/lib"
+          "--extra-lib-dirs=${(pkgs.zstd.override { enableStatic = true; }).out}/lib"
+          "--extra-lib-dirs=${(pkgs.bzip2.override { enableStatic = true; }).out}/lib"
+          "--extra-lib-dirs=${(pkgs.elfutils.overrideAttrs (old: { dontDisableStatic= true; })).out}/lib"
         ] ++ pkgs.lib.optionals (!strip) [
           "--disable-executable-stripping"
         ];
